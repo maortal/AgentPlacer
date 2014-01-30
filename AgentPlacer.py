@@ -30,20 +30,21 @@ while key != '0\n':
         chosenMap = int(raw_input("Enter map ID: "))
         if (chosenMap <= index) & (chosenMap > 0):
             break
-    numberOfAgents = int(raw_input("Enter number of agents: "))
-    precentageOfNonCompliant = int(raw_input("Enter Precentage of non compliant agents: "))
-    numberOfNonComp = numberOfAgents * (precentageOfNonCompliant / 100.0)
-    filename = str(availableMaps[chosenMap]['Name']).split('.')[0] + "-N_" + str(numberOfAgents) + "-P_" + str(
-        int(numberOfNonComp)) + ".txt"
+    percentageOfAgents = int(raw_input("Enter Percentage of agents to cover the map: "))
+    numberOfAgents = availableMaps[chosenMap]['States'] * (percentageOfAgents / 100.0)
+    percentageOfNonCompliant = int(raw_input("Enter Percentage of non compliant agents: "))
+    numberOfNonComp = numberOfAgents * (percentageOfAgents / 100.0)
+    filename = "{0}-T_{1}-NC_{2}.txt".format(str(availableMaps[chosenMap]['Name']).split('.')[0], str(numberOfAgents),
+                                             str(int(numberOfNonComp)))
     iteration = int(raw_input("Enter number of iterations: "))
     while iteration > 0:
         Nagents = numberOfAgents
         NnonCagents = numberOfNonComp
         placeagents = reduce(list.__add__, (list(mi) for mi in availableMaps[chosenMap]['Map']))
         while Nagents > 0:
-            ind = random.randint(0, len(placeagents))
+            ind = random.randint(0, len(placeagents)-1)
             while placeagents[ind] != '.':
-                ind = random.randint(0, len(placeagents))
+                ind = random.randint(0, len(placeagents)-1)
             if NnonCagents > 0:
                 NnonCagents -= 1
                 placeagents[ind] = 'n'
