@@ -24,37 +24,57 @@ for f in os.listdir('.'):
         print(str(index) + ". " + f + "\t\tStates: " + str(availableMaps[index]['States']))
         index += 1
 
-key = '1'
-while key != '0\n':
+#key = '1'
+#while key != '0\n':
+if len(sys.argv) > 4:
+    chosenMap = int(sys.argv[1])
+    percentageOfAgents = float(sys.argv[2])
+    percentageOfNonCompliant = float(sys.argv[3])
+    iteration = int(sys.argv[4])
+else:
     while True:
         chosenMap = int(raw_input("Enter map ID: "))
         if (chosenMap <= index) & (chosenMap > 0):
             break
-    numberOfAgents = int(raw_input("Enter number of agents: "))
-    precentageOfNonCompliant = int(raw_input("Enter Precentage of non compliant agents: "))
-    numberOfNonComp = numberOfAgents * (precentageOfNonCompliant / 100.0)
-    filename = str(availableMaps[chosenMap]['Name']).split('.')[0] + "-N_" + str(numberOfAgents) + "-P_" + str(
-        int(numberOfNonComp)) + ".txt"
+    percentageOfAgents = float(raw_input("Enter Percentage of agents to cover the map: "))
+    percentageOfNonCompliant = float(raw_input("Enter Percentage of non compliant agents: "))
     iteration = int(raw_input("Enter number of iterations: "))
-    while iteration > 0:
-        Nagents = numberOfAgents
-        NnonCagents = numberOfNonComp
-        placeagents = reduce(list.__add__, (list(mi) for mi in availableMaps[chosenMap]['Map']))
-        while Nagents > 0:
-            ind = random.randint(0, len(placeagents))
-            while placeagents[ind] != '.':
-                ind = random.randint(0, len(placeagents))
-            if NnonCagents > 0:
-                NnonCagents -= 1
-                placeagents[ind] = 'n'
-            else:
-                placeagents[ind] = 'c'
-            Nagents -= 1
-        if not os.path.exists('ready'):
-            os.makedirs('ready')
-        with open("ready\\" + str(iteration) + "-" + filename, 'w') as file:
-            for item in placeagents:
-                file.write("%s" % item)
-        iteration -= 1
-    print("Press 0 to quit or any key to continue")
-    key = str(sys.stdin.readline())
+
+numberOfAgents = int(availableMaps[chosenMap]['States'] * (percentageOfAgents / 100.0))
+numberOfNonComp = int(numberOfAgents * (percentageOfNonCompliant / 100.0))
+filename = "{0}-T_{1}-NC_{2}.txt".format(str(availableMaps[chosenMap]['Name']).split('.')[0], str(numberOfAgents),
+                                         str(int(numberOfNonComp)))
+
+agentsIndexs = []
+Nagents = numberOfAgents
+placeagents = reduce(list.__add__, (list(mi) for mi in availableMaps[chosenMap]['Map']))
+while Nagents > 0:
+    ind = random.randint(0, len(placeagents) - 1)
+    while placeagents[ind] != '.':
+        ind = random.randint(0, len(placeagents) - 1)
+    agentsIndexs.append(ind)
+    placeagents[ind] = 'c'
+    Nagents -= 1
+
+
+while iteration > 0:
+    placeagentsTemp= list(placeagents)
+    tmpagentsIdx = list(agentsIndexs)
+    NnonCagents = numberOfNonComp
+    from random import choice
+    while NnonCagents > 0:
+        placeNonCompliant = choice(tmpagentsIdx)
+        tmpagentsIdx.remove(placeNonCompliant)
+        placeagentsTemp[placeNonCompliant] = 'n'
+        NnonCagents-=1
+
+    savepath = "ready\\" + os.path.splitext(availableMaps[chosenMap]['Name'])[0] + "\\"
+    if not os.path.exists(savepath):
+        os.makedirs(savepath)
+    with open(savepath + os.path.splitext(filename)[0] + "-I" + str(iteration) + os.path.splitext(filename)[1], 'w') as file:
+        for item in placeagentsTemp:
+            file.write("%s" % item)
+    iteration -= 1
+   # print("Press 0 to quit or any key to continue")
+   # key = str(sys.stdin.readline())
+   # key ="0\n"
