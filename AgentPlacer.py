@@ -133,7 +133,7 @@ if __name__ == "__main__":
             placeagentsTemp[placeNonCompliant] = 'n'
             NnonCagents -= 1
 
-        savepath = "ready\\" + os.path.splitext(availableMaps[chosenMap].FileName)[0] + "\\"
+        savepath = "ready/" + os.path.splitext(availableMaps[chosenMap].FileName)[0] + "/"
         if not os.path.exists(savepath):
             os.makedirs(savepath)
         with open(savepath + os.path.splitext(filename)[0] + "-I" + str(iteration) + os.path.splitext(filename)[1],
